@@ -1,0 +1,46 @@
+phle server bnaye 
+fir mongodb connect kre 
+
+3.ab pdf upload krenge
+PDF upload karna aur uska text nikalna
+
+npm install multer pdf-parse@1.1.1
+multer file upload handle karta hai (Express khud files nahi padh paata).
+pdf-parse PDF ke andar se text nikalta hai. Version 1.1.1 pin kiya hai kyunki naye version ka API alag hai, 
+aur tutorials/examples isi ke hain.
+
+Multer
+Express by default multipart file uploads process nahi karta. Multer uploaded PDF receive karne mein help karta hai.
+
+steps 4
+Step 4: text ko chunks mein todna. Ye RAG ka sabse important concept hai, 
+Chunking kyun?
+
+PDF ka pura text ek saath embed karoge to dikkat hogi:
+
+Embedding model ki input limit hoti hai.
+Pure document ka ek vector bana to wo “average” meaning ban jaata hai, 
+aur kisi specific sawaal ka answer dhoondhna mushkil ho jaata hai.
+
+Isliye text ko chhote tukdon (chunks) mein todte hain, aur har chunk ka apna vector hota hai.
+ Sawaal pucha to sirf wahi 3-4 chunks milte hain jo relevant hain.
+Overlap kyun? Agar koi important sentence do chunks ke beech kat gaya, 
+to dono mein meaning adhuri reh jaati hai. Isliye har chunk apne pichle
+ chunk ke last ~200 characters repeat karta hai.
+
+steps:5
+Step 5: Embeddings. Yahan text pehli baar numbers (vectors) mein badlega.
+Embedding model text leta hai aur ek lambi list of numbers deta hai, jaise [0.012, -0.834, 0.201, ...]. 
+Ye numbers text ke meaning ko represent karte hain. Do chunks ka meaning similar ho to unke vectors 
+paas-paas hote hain. Sawaal bhi embed karenge, aur jo chunks sawaal 
+ke vector ke sabse paas honge wahi answer dene ke kaam aayenge. Ye search Step 7 mein karenge. 
+
+Part A: Free API key
+aistudio.google.com/apikey pe jao (Google account se login).
+Create API key pe click karo aur key copy karo.
+
+Hum Google ka gemini-embedding-001 use karenge kyunki uska free tier student projects ke liye kaafi hai.
+
+Part B: Code
+
+1. Install (server folder mein):
