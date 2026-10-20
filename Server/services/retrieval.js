@@ -7,7 +7,8 @@ const {embedTexts} = require('./embeddings');
 // documentId = optional, kisi specific PDF mein search karne ke liye
 // limit = maximum kitne chunks chahiye; default 4
 
-const retrievalChunks =async (question, documentId, limit=4) => {
+const retrieveChunks =async (question, documentId, limit=4) => {
+
     const [queryVector] = await embedTexts(
         [question],'RETRIEVAL_QUERY'
     );
@@ -21,7 +22,7 @@ const retrievalChunks =async (question, documentId, limit=4) => {
     if(documentId){
         vectorStage.filter= {
              // String ID ko MongoDB ObjectId mein convert karo.
-         document: new mongoose.Types.ObjectId(documentId),
+         documentId: new mongoose.Types.ObjectId(documentId),
         };
     }
       // Step 4: Atlas mein search chalao aur relevant chunks return karo.
@@ -45,6 +46,6 @@ const retrievalChunks =async (question, documentId, limit=4) => {
 
 };
 module.exports = {
-    retrievalChunks,
+    retrieveChunks,
 }
 

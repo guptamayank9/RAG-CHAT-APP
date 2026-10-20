@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
         const answer = await generateAnswer(question, chunks);
         const sources = chunks.map((c)=>({
             chunkIndex: c.chunkIndex,
-            score: s.score,
+            score: c.score,
             preview: c.text.slice(0,200),
         }));
 
