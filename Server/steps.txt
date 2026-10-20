@@ -44,3 +44,130 @@ Hum Google ka gemini-embedding-001 use karenge kyunki uska free tier student pro
 Part B: Code
 
 1. Install (server folder mein):
+
+
+
+Step 6: chunks aur vectors ko MongoDB mein save karna. Isse PDF ek baar process hogi aur data database mein rahega. Har sawaal pe dobara embedding nahi banani padegi.
+
+Data ka structure
+
+Do collections banayenge:
+
+Document: ek uploaded PDF ki info (naam, pages, kitne chunks).
+Chunk: ek chunk ka text, uska vector, aur wo kis document ka hai.
+
+Chunks alag collection mein isliye rakhe hain kyunki Atlas Vector Search ek document ke andar ki array ke bajaye alag documents pe behtar kaam karta hai. Ek chunk = ek record.
+
+
+Step 7 mein semantic search test karna hai. Matlab jo PDF tumne upload ki thi, uske content se related question poochna hai. Atlas us question se milte-julte chunks search karke dega.
+
+Chalo ek-ek karke karte hain. 👇 vector_idx
+Ye index Atlas ko batata hai ki embedding field pe similarity search kaise chalani hai. Bina index ke $vectorSearch kaam nahi karega.
+
+Atlas → Database → Browse Collections → ragchat → chunks collection.
+Upar Search Indexes tab pe jao, phir Create Search Index.
+Vector Search chuno (Atlas Search nahi), phir JSON Editor pe click karo.
+Index name rakho: vector_index
+Ye definition paste karo:
+json
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 768,
+      "similarity": "cosine"
+    },
+    {
+      "type": "filter",
+      "path": "documentId"
+    }
+  ]
+}
+
+
+step 8: LLM se answer generate karna. Is step ke baad backend ka RAG poora ho jayega: sawaal → relevant chunks → LLM → answer + sources.
+
+Flow
+Sawaal aata hai.
+Step 7 wali search se top 4 chunks milte hain.
+Un chunks ko “context” bana ke LLM ko dete hain: “sirf is context se jawab do.”
+LLM jawab deta hai, hum sources ke saath wapas bhejte hain.
+
+“Sirf context se jawab do” wali instruction hi RAG ko normal chatbot se alag banati hai. Isse LLM apni taraf se baatein banata (hallucinate) kam hai.
+
+LLM ke liye wahi Gemini API key chalegi, to koi naya account nahi chahiye.
+
+Code
+
+const express = require('express');
+const mongoose = require('mongoose');
+const Chunk =require('../models/Chunk');
+const {embedTexts} = require('../services/embeddings');
+
+const router = express.Router();
+
+
+router.post('/' ,async (req, res) => {
+
+    try {
+        const {question , documentId} =req.body;
+
+    // Check: question missing hai ya empty hai?
+    // trim() question ke aage-peeche ki spaces hatata hai.
+        if(!question || !question.trim()){
+            return res.status(400).json({
+                error:"Question is required"
+            });
+        }
+        // sawaal ko bhi vector mein badlo (taskType QUERY)
+            // Question ko embedding vector mein convert karo.
+    // RETRIEVAL_QUERY batata hai ki ye search query hai,
+    // PDF ka document text nahi.
+    // [queryVector] pehle returned vector ko nikaalta hai.
+        const [queryVector] = await embedTexts([question], "RETRIEVAL_QUERY");
+      
+        const vectorStage = {
+            index : "vector_index",
+            path:"embedding",
+            queryVector,
+            numCandidates:100,
+            limit:4,
+        };
+
+        if(documentId){
+            vectorStage.filter = {
+                documentId: new mongoose.Types.ObjectId(documentId),
+            };
+        }
+        
+        const results = await Chunk.aggregate([
+            {$vectorSearch: vectorStage},
+            {
+                $project: {
+                    _id: 0,
+                    documentId: 1,
+                    chunkIndex: 1,
+                    text: 1,
+                    score: {$meta: "vectorSearchScore"},
+                },
+            },
+        ]);
+        res.json({
+            question, 
+            results 
+        });
+        
+    } catch (error) {
+       console.error(error);
+       res.status(500).json({ error: "Search failed" });
+        
+    }
+    
+})
+module.exports =router;
+Pehle search.js	Ab search.js
+Question ki embedding banata tha	Ye kaam retrieval.js karta hai
+Atlas Vector Search chalata tha	Ye bhi retrieval.js karta hai
+Results return karta tha	Ab bhi results return karta hai
+Search logic route ke andar tha	Search logic alag reusable service mein hai
