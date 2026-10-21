@@ -14,6 +14,10 @@ const documentSchema = new mongoose.Schema(
         type: Number,
         required: true
     },
+    fileHash: { 
+        type: String, 
+        index: true 
+    },
 },
     {
         timestamps: true

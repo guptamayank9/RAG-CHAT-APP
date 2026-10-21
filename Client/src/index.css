@@ -141,3 +141,20 @@ button:disabled {
   font-family: inherit;
   font-size: 15px;
 }
+.message.assistant .bubble {
+  white-space: normal;
+}
+
+.bubble p {
+  margin: 0 0 8px;
+}
+
+.bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.bubble ul,
+.bubble ol {
+  margin: 4px 0 8px;
+  padding-left: 20px;
+}

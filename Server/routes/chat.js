@@ -39,9 +39,14 @@ router.post('/', async (req, res) => {
         
     } catch (error) {
         console.error(error);
-        res.status(500).json({
-            error:"Chat failed"
-        });      
+
+    if ([429, 503].includes(error.status)) {
+        return res.status(503).json({
+            error: "The AI service is busy right now. Please try again in a few seconds.",
+        });
+    }
+
+    res.status(500).json({ error: "Chat failed" });    
     }
     
 });
