@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import api from "../api";
 
 const Chat = ({ documentId }) => {
   const [messages, setMessages] = useState([]);
@@ -22,7 +23,7 @@ const Chat = ({ documentId }) => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("/api/chat", {
+      const { data } = await api.post("/api/chat", {
         question,
         documentId,
       });

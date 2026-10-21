@@ -158,3 +158,15 @@ button:disabled {
   margin: 4px 0 8px;
   padding-left: 20px;
 }
+.doc-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-danger {
+  background: #dc2626;
+}
+
+.btn-danger:disabled {
+  background: #f0a5a5;
+}

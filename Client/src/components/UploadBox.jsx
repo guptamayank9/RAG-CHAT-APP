@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios';
-
+import api from "../api";
 
 const UploadBox = ( {onUploaded}) => {
 
@@ -18,7 +18,7 @@ const UploadBox = ( {onUploaded}) => {
         setError("");
 
         try {
-            const {data} = await axios.post('/api/upload', formData);
+            const {data} = await api.post('/api/upload', formData);
             onUploaded(data);  
         } catch (err) {
             console.error(err);
