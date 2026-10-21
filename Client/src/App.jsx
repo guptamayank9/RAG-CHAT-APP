@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import UploadBox from "./components/UploadBox";
 import Chat from "./components/Chat";
-import api from "../api";
+import api from "./api";
 
 
 export default function App() {
