@@ -2,7 +2,7 @@
 
 Upload a PDF and ask questions about it in plain English. Answers are generated from the document's own content and shown with the exact source chunks, so every answer can be verified.
 
-**Live demo:** [add link after deploy]
+**Live demo:** https://rag-chat-app-snowy.vercel.app/
 
 
 ## How it works
