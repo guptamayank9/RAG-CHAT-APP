@@ -3,6 +3,8 @@
 Upload a PDF and ask questions about it in plain English. Answers are generated from the document's own content and shown with the exact source chunks, so every answer can be verified.
 
 **Live demo:** https://rag-chat-app-snowy.vercel.app/
+<img width="1482" height="910" alt="image" src="https://github.com/user-attachments/assets/bce99e5f-93b6-444e-a631-498615e0c3fb" />
+
 
 
 ## How it works
